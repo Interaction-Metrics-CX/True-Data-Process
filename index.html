@@ -92,37 +92,39 @@
             container.style.opacity = "0";
             setTimeout(() => {
                 container.innerText = questions[currentQuestion];
-                document.getElementById("yes-button").classList.toggle("selected", answers[currentQuestion] === "yes");
-                document.getElementById("no-button").classList.toggle("selected", answers[currentQuestion] === "no");
+                document.getElementById("yes-button").classList.remove("selected");
+                document.getElementById("no-button").classList.remove("selected");
+                if (answers[currentQuestion] === "yes") {
+                    document.getElementById("yes-button").classList.add("selected");
+                } else if (answers[currentQuestion] === "no") {
+                    document.getElementById("no-button").classList.add("selected");
+                }
                 container.style.opacity = "1";
             }, 300);
         }
         
         function answer(choice) {
             answers[currentQuestion] = choice;
-            setTimeout(() => nextQuestion(), 300);
+            setTimeout(() => {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            }, 300);
         }
         
         function showResult() {
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("result").classList.remove("hidden");
-            const score = answers.filter(a => a === "yes").length * 10;
+            const scorePercentage = (answers.filter(a => a === "yes").length / questions.length) * 100;
             const scoreElement = document.getElementById("score");
-            scoreElement.innerText = score;
+            scoreElement.innerText = scorePercentage.toFixed(0) + "%";
             scoreElement.className = "score";
-            if (score < 70) scoreElement.classList.add("red");
-            else if (score >= 71 && score <= 89) scoreElement.classList.add("yellow");
+            if (scorePercentage <= 50) scoreElement.classList.add("red");
+            else if (scorePercentage > 50 && scorePercentage <= 80) scoreElement.classList.add("yellow");
             else scoreElement.classList.add("green");
-            
-            const resultsContainer = document.getElementById("detailed-results");
-            resultsContainer.innerHTML = "";
-            questions.forEach((question, index) => {
-                const answer = answers[index];
-                const correct = answer === "yes";
-                const symbol = correct ? "✅" : "❌";
-                const message = correct ? "😊 Good job!" : `🚨 ${bestPractices[index]}`;
-                resultsContainer.innerHTML += `<div><span class='icon'>${symbol}</span> ${question}<div class='message'>${message}</div></div>`;
-            });
         }
         
         loadQuestion();
