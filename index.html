@@ -7,13 +7,20 @@
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; text-align: left; }
         .container { max-width: 400px; margin: auto; overflow: hidden; }
-        .question-box { padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); position: relative; }
+        .question-box { 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 10px; 
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1); 
+            position: relative; 
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
         .button-container { display: flex; justify-content: space-between; margin-top: 10px; }
         .button { flex: 1; padding: 15px; margin: 5px; font-size: 18px; text-align: center; border: none; cursor: pointer; border-radius: 5px; background-color: lightgray; transition: background-color 0.3s; }
         .button.selected { background-color: blue; color: white; }
         .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
         .hidden { display: none; }
-        .question-box { transition: transform 0.5s ease-in-out; }
     </style>
 </head>
 <body>
@@ -54,32 +61,26 @@
         
         function loadQuestion() {
             const container = document.getElementById("question-container");
-            container.style.transform = "translateX(100%)";
+            container.style.opacity = "0";
             setTimeout(() => {
                 container.innerText = questions[currentQuestion];
                 document.getElementById("yes-button").classList.toggle("selected", answers[currentQuestion] === "yes");
                 document.getElementById("no-button").classList.toggle("selected", answers[currentQuestion] === "no");
-                container.style.transform = "translateX(0)";
-            }, 200);
+                container.style.opacity = "1";
+            }, 300);
         }
         
         function answer(choice) {
             answers[currentQuestion] = choice;
             document.getElementById("yes-button").classList.toggle("selected", choice === "yes");
             document.getElementById("no-button").classList.toggle("selected", choice === "no");
-            document.getElementById("question-container").style.transform = "translateX(-100%)";
             setTimeout(() => nextQuestion(), 300);
         }
         
         function nextQuestion() {
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
-                const container = document.getElementById("question-container");
-                container.style.transform = "translateX(100%)";
-                setTimeout(() => {
-                    loadQuestion();
-                    container.style.transform = "translateX(0)";
-                }, 200);
+                loadQuestion();
             } else {
                 showResult();
             }
