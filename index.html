@@ -21,6 +21,11 @@
         .button.selected { background-color: blue; color: white; }
         .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
         .hidden { display: none; }
+        .back-button { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .score { font-size: 48px; font-weight: bold; }
+        .red { color: red; }
+        .yellow { color: yellow; }
+        .green { color: green; }
     </style>
 </head>
 <body>
@@ -33,12 +38,12 @@
                 <button id="no-button" class="button" onclick="answer('no')">No</button>
             </div>
             <div class="navigation">
-                <button id="back-button" onclick="prevQuestion()">Back</button>
+                <button id="back-button" class="back-button" onclick="prevQuestion()">←</button>
             </div>
         </div>
         <div id="result" class="hidden">
             <h2>Your Score:</h2>
-            <p id="score"></p>
+            <p id="score" class="score"></p>
         </div>
     </div>
 
@@ -97,7 +102,16 @@
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("result").classList.remove("hidden");
             const score = answers.filter(a => a === "yes").length * 10;
-            document.getElementById("score").innerText = `${score} / 100`;
+            const scoreElement = document.getElementById("score");
+            scoreElement.innerText = score;
+            
+            if (score < 70) {
+                scoreElement.classList.add("red");
+            } else if (score >= 71 && score <= 89) {
+                scoreElement.classList.add("yellow");
+            } else {
+                scoreElement.classList.add("green");
+            }
         }
         
         loadQuestion();
