@@ -31,8 +31,8 @@
         .red { color: red; }
         .yellow { color: yellow; }
         .green { color: green; }
-        .results-list { margin-top: 20px; }
-        .results-list div { margin-bottom: 20px; }
+        .results-list { margin-top: 20px; text-align: left; }
+        .results-list div { padding: 10px 0; border-bottom: 1px solid #ddd; }
         .results-list .icon { font-size: 24px; margin-right: 10px; }
         .results-list .message { font-size: 16px; margin-top: 5px; }
     </style>
@@ -103,21 +103,13 @@
             setTimeout(() => nextQuestion(), 300);
         }
         
-        function nextQuestion() {
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                loadQuestion();
-            } else {
-                showResult();
-            }
-        }
-        
         function showResult() {
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("result").classList.remove("hidden");
             const score = answers.filter(a => a === "yes").length * 10;
             const scoreElement = document.getElementById("score");
             scoreElement.innerText = score;
+            scoreElement.className = "score";
             if (score < 70) scoreElement.classList.add("red");
             else if (score >= 71 && score <= 89) scoreElement.classList.add("yellow");
             else scoreElement.classList.add("green");
