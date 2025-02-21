@@ -32,8 +32,9 @@
         .yellow { color: yellow; }
         .green { color: green; }
         .results-list { margin-top: 20px; text-align: left; }
-        .results-list div { padding: 10px 0; border-bottom: 1px solid #ddd; }
-        .results-list .icon { font-size: 24px; margin-right: 10px; }
+        .results-list .result-row { display: flex; align-items: center; border-bottom: 1px solid #ddd; padding: 10px 0; }
+        .results-list .icon-column { width: 50px; text-align: center; font-size: 24px; }
+        .results-list .text-column { flex: 1; }
         .results-list .message { font-size: 16px; margin-top: 5px; }
     </style>
 </head>
@@ -108,6 +109,13 @@
             }, 300);
         }
         
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+        
         function showResult() {
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("result").classList.remove("hidden");
@@ -126,7 +134,7 @@
                 const correct = answer === "yes";
                 const symbol = correct ? "✅" : "❌";
                 const message = correct ? "😊 Good job!" : `🚨 ${bestPractices[index]}`;
-                resultsContainer.innerHTML += `<div><span class='icon'>${symbol}</span> ${question}<div class='message'>${message}</div></div>`;
+                resultsContainer.innerHTML += `<div class='result-row'><div class='icon-column'>${symbol}</div><div class='text-column'>${question}<div class='message'>${message}</div></div></div>`;
             });
         }
         
