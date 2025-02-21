@@ -6,8 +6,8 @@
     <title>Interaction Metrics True Data Process</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; text-align: left; }
-        .container { max-width: 400px; margin: auto; overflow: hidden; text-align: left; }
-        h1 { margin-left: 0; }
+        .container { max-width: 400px; margin: auto; overflow: hidden; }
+        h1 { text-align: center; }
         .question-box { 
             padding: 20px; 
             border: 1px solid #ddd; 
@@ -16,28 +16,14 @@
             position: relative; 
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
-            text-align: left;
-            width: 100%;
-            margin-left: 0;
         }
-        .button-container { display: flex; justify-content: flex-start; margin-top: 10px; width: 100%; }
-        .button { 
-            flex: 1; 
-            padding: 15px; 
-            margin: 5px; 
-            font-size: 18px; 
-            text-align: center; 
-            border: none; 
-            cursor: pointer; 
-            border-radius: 5px; 
-            background-color: lightgray; 
-            transition: background-color 0.3s;
-        }
+        .button-container { display: flex; justify-content: space-between; margin-top: 10px; }
+        .button { flex: 1; padding: 15px; margin: 5px; font-size: 18px; text-align: center; border: none; cursor: pointer; border-radius: 5px; background-color: lightgray; transition: background-color 0.3s; }
         .button.selected { background-color: blue; color: white; }
-        .navigation { display: flex; justify-content: flex-start; margin-top: 20px; }
+        .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
         .hidden { display: none; }
-        .back-button { background: none; border: none; font-size: 24px; cursor: pointer; text-align: left; }
-        .score { font-size: 48px; font-weight: bold; text-align: left; }
+        .back-button { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .score { font-size: 48px; font-weight: bold; }
         .red { color: red; }
         .yellow { color: yellow; }
         .green { color: green; }
