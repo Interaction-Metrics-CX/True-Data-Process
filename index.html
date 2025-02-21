@@ -23,10 +23,14 @@
         .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
         .hidden { display: none; }
         .back-button { background: none; border: none; font-size: 24px; cursor: pointer; }
-        .score { font-size: 48px; font-weight: bold; }
+        .score-container { text-align: center; }
+        .score { font-size: 48px; font-weight: bold; text-align: center; }
         .red { color: red; }
         .yellow { color: yellow; }
         .green { color: green; }
+        .results-list { margin-top: 20px; }
+        .results-list div { display: flex; align-items: center; margin-bottom: 10px; }
+        .results-list span { margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -42,9 +46,10 @@
                 <button id="back-button" class="back-button" onclick="prevQuestion()">←</button>
             </div>
         </div>
-        <div id="result" class="hidden">
+        <div id="result" class="hidden score-container">
             <h2>Your Score:</h2>
             <p id="score" class="score"></p>
+            <div id="detailed-results" class="results-list"></div>
         </div>
     </div>
 
@@ -60,6 +65,19 @@
             "Do you validate customer feedback with multiple data sources?",
             "Are you using science-based methodologies for customer experience?",
             "Do you believe data-driven decisions lead to better customer engagement?"
+        ];
+
+        const bestPractices = [
+            "Customer feedback helps refine products and services.",
+            "Data analysis prevents costly business mistakes.",
+            "Customer satisfaction drives loyalty and revenue.",
+            "Structured surveys provide measurable insights.",
+            "Accurate data leads to better business decisions.",
+            "Iteration improves products based on real feedback.",
+            "Bias skews results, making decisions less effective.",
+            "Multiple data sources provide a full customer view.",
+            "Science-based methods ensure objective measurement.",
+            "Data-driven decisions yield better engagement strategies."
         ];
         
         let currentQuestion = 0;
@@ -78,8 +96,6 @@
         
         function answer(choice) {
             answers[currentQuestion] = choice;
-            document.getElementById("yes-button").classList.toggle("selected", choice === "yes");
-            document.getElementById("no-button").classList.toggle("selected", choice === "no");
             setTimeout(() => nextQuestion(), 300);
         }
         
@@ -105,14 +121,20 @@
             const score = answers.filter(a => a === "yes").length * 10;
             const scoreElement = document.getElementById("score");
             scoreElement.innerText = score;
+            scoreElement.className = "score";
+            if (score < 70) scoreElement.classList.add("red");
+            else if (score >= 71 && score <= 89) scoreElement.classList.add("yellow");
+            else scoreElement.classList.add("green");
             
-            if (score < 70) {
-                scoreElement.classList.add("red");
-            } else if (score >= 71 && score <= 89) {
-                scoreElement.classList.add("yellow");
-            } else {
-                scoreElement.classList.add("green");
-            }
+            const resultsContainer = document.getElementById("detailed-results");
+            resultsContainer.innerHTML = "";
+            questions.forEach((question, index) => {
+                const answer = answers[index];
+                const correct = answer === "yes";
+                const symbol = correct ? "✅" : "❌";
+                const explanation = correct ? "" : ` - ${bestPractices[index]}`;
+                resultsContainer.innerHTML += `<div>${symbol} ${question} <span>${explanation}</span></div>`;
+            });
         }
         
         loadQuestion();
