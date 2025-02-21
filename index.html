@@ -92,13 +92,6 @@
             container.style.opacity = "0";
             setTimeout(() => {
                 container.innerText = questions[currentQuestion];
-                document.getElementById("yes-button").classList.remove("selected");
-                document.getElementById("no-button").classList.remove("selected");
-                if (answers[currentQuestion] === "yes") {
-                    document.getElementById("yes-button").classList.add("selected");
-                } else if (answers[currentQuestion] === "no") {
-                    document.getElementById("no-button").classList.add("selected");
-                }
                 container.style.opacity = "1";
             }, 300);
         }
@@ -125,6 +118,16 @@
             if (scorePercentage <= 50) scoreElement.classList.add("red");
             else if (scorePercentage > 50 && scorePercentage <= 80) scoreElement.classList.add("yellow");
             else scoreElement.classList.add("green");
+            
+            const resultsContainer = document.getElementById("detailed-results");
+            resultsContainer.innerHTML = "";
+            questions.forEach((question, index) => {
+                const answer = answers[index];
+                const correct = answer === "yes";
+                const symbol = correct ? "✅" : "❌";
+                const message = correct ? "😊 Good job!" : `🚨 ${bestPractices[index]}`;
+                resultsContainer.innerHTML += `<div><span class='icon'>${symbol}</span> ${question}<div class='message'>${message}</div></div>`;
+            });
         }
         
         loadQuestion();
