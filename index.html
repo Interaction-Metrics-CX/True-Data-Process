@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction Metrics True Data Process</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: left;
+        }
+        .question {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interaction Metrics True Data Process</h1>
+        <form id="quizForm">
+            <div id="questionsContainer"></div>
+            <div class="buttons">
+                <button type="button" id="prev" disabled>Previous</button>
+                <button type="button" id="next">Next</button>
+                <button type="submit" id="submit" style="display: none;">Submit</button>
+            </div>
+        </form>
+        <div id="result" style="display: none; font-size: 20px; margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const questions = [
+            "Is customer experience important for business growth?",
+            "Should surveys be free of bias?",
+            "Does cognitive bias affect survey results?",
+            "Is it necessary to analyze open-ended survey responses?",
+            "Can bad business processes impact customer satisfaction?",
+            "Should companies rely solely on NPS scores for CX measurement?",
+            "Is survey fatigue a real issue?",
+            "Do well-crafted surveys improve data accuracy?",
+            "Should companies act on customer feedback promptly?",
+            "Does Interaction Metrics focus on true data processes?"
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        const container = document.getElementById("questionsContainer");
+        
+        function renderQuestions() {
+            questions.forEach((question, index) => {
+                const div = document.createElement("div");
+                div.classList.add("question");
+                if (index === 0) div.classList.add("active");
+                div.innerHTML = `
+                    <p>${index + 1}. ${question}</p>
+                    <label><input type="radio" name="q${index}" value="yes"> Yes</label>
+                    <label><input type="radio" name="q${index}" value="no"> No</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateButtons() {
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").style.display = currentQuestion < questions.length - 1 ? "inline-block" : "none";
+            document.getElementById("submit").style.display = currentQuestion === questions.length - 1 ? "inline-block" : "none";
+        }
+
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach((q, i) => {
+                q.classList.toggle("active", i === index);
+            });
+        }
+
+        document.getElementById("next").addEventListener("click", () => {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateButtons();
+            }
+        });
+
+        document.getElementById("prev").addEventListener("click", () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateButtons();
+            }
+        });
+
+        document.getElementById("quizForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            score = 0;
+            questions.forEach((_, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) score += 10;
+            });
+            document.getElementById("result").innerText = `Your score: ${score}/100`;
+            document.getElementById("result").style.display = "block";
+            document.getElementById("quizForm").style.display = "none";
+        });
+
+        renderQuestions();
+        updateButtons();
+    </script>
+</body>
+</html>
