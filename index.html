@@ -10,42 +10,47 @@
             margin: 40px;
             padding: 0;
             background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
         .container {
             max-width: 600px;
-            margin: auto;
+            position: relative;
+            width: 100%;
         }
         h1 {
             text-align: left;
         }
+        .question-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+        }
         .question {
-            display: none;
+            position: absolute;
+            width: 100%;
             background: white;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            text-align: center;
+            transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
             opacity: 0;
-            position: absolute;
-            width: 100%;
         }
         .active {
-            display: block;
             opacity: 1;
             transform: translateX(0);
-            position: relative;
+        }
+        .prev-exit {
+            transform: translateX(-100%);
+            opacity: 0;
         }
         .next-enter {
             transform: translateX(100%);
-        }
-        .next-enter-active {
-            transform: translateX(0);
-        }
-        .prev-enter {
-            transform: translateX(-100%);
-        }
-        .prev-enter-active {
-            transform: translateX(0);
+            opacity: 0;
         }
         .buttons {
             display: flex;
@@ -69,7 +74,7 @@
     <div class="container">
         <h1>Interaction Metrics True Data Process</h1>
         <form id="quizForm">
-            <div id="questionsContainer"></div>
+            <div class="question-container" id="questionsContainer"></div>
             <div class="buttons">
                 <button type="button" id="prev" disabled>Previous</button>
                 <button type="button" id="next">Next</button>
@@ -117,11 +122,16 @@
             document.getElementById("submit").style.display = currentQuestion === questions.length - 1 ? "inline-block" : "none";
         }
 
-        function showQuestion(index, direction) {
-            document.querySelectorAll(".question").forEach((q, i) => {
-                q.classList.remove("active", "next-enter", "prev-enter");
+        function showQuestion(index) {
+            const questions = document.querySelectorAll(".question");
+            questions.forEach((q, i) => {
+                q.classList.remove("active", "prev-exit", "next-enter");
                 if (i === index) {
-                    q.classList.add("active", direction === "next" ? "next-enter" : "prev-enter");
+                    q.classList.add("active");
+                } else if (i < index) {
+                    q.classList.add("prev-exit");
+                } else {
+                    q.classList.add("next-enter");
                 }
             });
         }
@@ -129,7 +139,7 @@
         document.getElementById("next").addEventListener("click", () => {
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
-                showQuestion(currentQuestion, "next");
+                showQuestion(currentQuestion);
                 updateButtons();
             }
         });
@@ -137,7 +147,7 @@
         document.getElementById("prev").addEventListener("click", () => {
             if (currentQuestion > 0) {
                 currentQuestion--;
-                showQuestion(currentQuestion, "prev");
+                showQuestion(currentQuestion);
                 updateButtons();
             }
         });
