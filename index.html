@@ -5,169 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interaction Metrics True Data Process</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .container {
-            width: 90%;
-            max-width: 500px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        h1 {
-            text-align: left;
-            font-size: 1.5em;
-        }
-        .question-container {
-            position: relative;
-            width: 100%;
-            min-height: 200px;
-            overflow: hidden;
-        }
-        .question {
-            position: absolute;
-            width: 100%;
-            background: white;
-            padding: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            text-align: left;
-            transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
-            opacity: 0;
-            transform: translateX(100%);
-            min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .prev-exit {
-            transform: translateX(-100%);
-        }
-        .buttons, .options {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .options button, .buttons button {
-            flex: 1;
-            margin: 5px;
-            padding: 10px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: left; }
+        .container { max-width: 400px; margin: auto; }
+        .question-box { padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+        .button { display: block; width: 100%; padding: 15px; margin: 10px 0; font-size: 18px; text-align: center; border: none; cursor: pointer; border-radius: 5px; }
+        .yes { background-color: lightgray; }
+        .no { background-color: lightgray; }
+        .yes.selected { background-color: green; color: white; }
+        .no.selected { background-color: red; color: white; }
+        .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+    <h1>Interaction Metrics True Data Process</h1>
     <div class="container">
-        <h1>Interaction Metrics True Data Process</h1>
-        <form id="quizForm">
-            <div class="question-container" id="questionsContainer"></div>
-            <div class="error" id="error">Please select an answer before proceeding.</div>
-            <div class="buttons">
-                <button type="button" id="prev" disabled>&#8592; Back</button>
-                <button type="submit" id="submit" style="display: none;">Submit</button>
+        <div id="quiz">
+            <div id="question-container" class="question-box"></div>
+            <button id="yes-button" class="button yes" onclick="answer('yes')">Yes</button>
+            <button id="no-button" class="button no" onclick="answer('no')">No</button>
+            <div class="navigation">
+                <button id="back-button" onclick="prevQuestion()">Back</button>
+                <button id="next-button" onclick="nextQuestion()">Next</button>
             </div>
-        </form>
-        <div id="result" style="display: none; font-size: 20px; margin-top: 20px;"></div>
+        </div>
+        <div id="result" class="hidden">
+            <h2>Your Score:</h2>
+            <p id="score"></p>
+        </div>
     </div>
 
     <script>
         const questions = [
-            "Is customer experience important for business growth?",
-            "Should surveys be free of bias?",
-            "Does cognitive bias affect survey results?",
-            "Is it necessary to analyze open-ended survey responses?",
-            "Can bad business processes impact customer satisfaction?",
-            "Should companies rely solely on NPS scores for CX measurement?",
-            "Is survey fatigue a real issue?",
-            "Do well-crafted surveys improve data accuracy?",
-            "Should companies act on customer feedback promptly?",
-            "Does Interaction Metrics focus on true data processes?"
+            "Do you prioritize customer feedback in decision-making?",
+            "Does your company analyze data before implementing changes?",
+            "Is customer satisfaction a key metric in your business strategy?",
+            "Do you use structured surveys to gather feedback?",
+            "Are you confident in the accuracy of your collected data?",
+            "Do you regularly iterate processes based on customer insights?",
+            "Have you eliminated bias from your customer surveys?",
+            "Do you validate customer feedback with multiple data sources?",
+            "Are you using science-based methodologies for customer experience?",
+            "Do you believe data-driven decisions lead to better customer engagement?"
         ];
         
         let currentQuestion = 0;
-        const container = document.getElementById("questionsContainer");
+        let answers = Array(questions.length).fill(null);
         
-        function renderQuestions() {
-            container.innerHTML = ""; // Clear any previous questions
-            questions.forEach((question, index) => {
-                const div = document.createElement("div");
-                div.classList.add("question");
-                if (index === 0) div.classList.add("active");
-                div.innerHTML = `
-                    <p>${index + 1}. ${question}</p>
-                    <div class="options">
-                        <button type="button" onclick="selectAnswer(${index}, 'yes')">Yes</button>
-                        <button type="button" onclick="selectAnswer(${index}, 'no')">No</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
+        function loadQuestion() {
+            document.getElementById("question-container").innerText = questions[currentQuestion];
+            document.getElementById("yes-button").classList.toggle("selected", answers[currentQuestion] === "yes");
+            document.getElementById("no-button").classList.toggle("selected", answers[currentQuestion] === "no");
         }
-
-        function selectAnswer(index, answer) {
-            let input = document.createElement("input");
-            input.type = "hidden";
-            input.name = `q${index}`;
-            input.value = answer;
-            document.querySelector(`.question:nth-child(${index + 1})`).appendChild(input);
-            
+        
+        function answer(choice) {
+            answers[currentQuestion] = choice;
+            document.getElementById("yes-button").classList.toggle("selected", choice === "yes");
+            document.getElementById("no-button").classList.toggle("selected", choice === "no");
+            setTimeout(() => nextQuestion(), 300);
+        }
+        
+        function nextQuestion() {
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
-                showQuestion(currentQuestion, true);
+                loadQuestion();
             } else {
-                document.getElementById("submit").style.display = "block";
+                showResult();
             }
         }
-
-        function showQuestion(index, forward = true) {
-            const questions = document.querySelectorAll(".question");
-            questions.forEach((q, i) => {
-                q.classList.remove("active", "prev-exit");
-                if (i === index) {
-                    q.classList.add("active");
-                } else if (forward && i < index) {
-                    q.classList.add("prev-exit");
-                }
-            });
-            document.getElementById("prev").disabled = currentQuestion === 0;
-        }
-
-        document.getElementById("prev").addEventListener("click", () => {
+        
+        function prevQuestion() {
             if (currentQuestion > 0) {
                 currentQuestion--;
-                showQuestion(currentQuestion, false);
+                loadQuestion();
             }
-        });
-
-        renderQuestions();
+        }
+        
+        function showResult() {
+            document.getElementById("quiz").classList.add("hidden");
+            document.getElementById("result").classList.remove("hidden");
+            const score = answers.filter(a => a === "yes").length * 10;
+            document.getElementById("score").innerText = `${score} / 100`;
+        }
+        
+        loadQuestion();
     </script>
 </body>
 </html>
