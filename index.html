@@ -31,12 +31,10 @@
         .red { color: red; }
         .yellow { color: yellow; }
         .green { color: green; }
-        .results-table { width: 100%; max-width: 1600px; margin: auto; display: table; }
-        .results-table div { display: table-row; }
-        .results-table span { display: table-cell; padding: 10px; }
-        .results-table .icon { width: 50px; text-align: center; }
-        .results-table .question { width: 300px; }
-        .results-table .explanation { width: 1200px; }
+        .results-list { margin-top: 20px; }
+        .results-list div { margin-bottom: 20px; }
+        .results-list .icon { font-size: 24px; margin-right: 10px; }
+        .results-list .message { font-size: 16px; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -55,7 +53,7 @@
         <div id="result" class="hidden score-container">
             <h2>Your Score:</h2>
             <p id="score" class="score"></p>
-            <div id="detailed-results" class="results-table"></div>
+            <div id="detailed-results" class="results-list"></div>
         </div>
     </div>
 
@@ -120,7 +118,6 @@
             const score = answers.filter(a => a === "yes").length * 10;
             const scoreElement = document.getElementById("score");
             scoreElement.innerText = score;
-            scoreElement.className = "score";
             if (score < 70) scoreElement.classList.add("red");
             else if (score >= 71 && score <= 89) scoreElement.classList.add("yellow");
             else scoreElement.classList.add("green");
@@ -131,8 +128,8 @@
                 const answer = answers[index];
                 const correct = answer === "yes";
                 const symbol = correct ? "✅" : "❌";
-                const explanation = correct ? "" : bestPractices[index];
-                resultsContainer.innerHTML += `<div><span class='icon'>${symbol}</span><span class='question'>${question}</span><span class='explanation'>${explanation}</span></div>`;
+                const message = correct ? "😊 Good job!" : `🚨 ${bestPractices[index]}`;
+                resultsContainer.innerHTML += `<div><span class='icon'>${symbol}</span> ${question}<div class='message'>${message}</div></div>`;
             });
         }
         
