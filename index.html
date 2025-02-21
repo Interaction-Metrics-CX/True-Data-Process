@@ -14,8 +14,9 @@
             border-radius: 10px; 
             box-shadow: 2px 2px 10px rgba(0,0,0,0.1); 
             position: relative; 
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
         }
         .button-container { display: flex; justify-content: space-between; margin-top: 10px; }
         .button { 
@@ -88,7 +89,14 @@
         let answers = Array(questions.length).fill(null);
         
         function loadQuestion() {
-            document.getElementById("question-container").innerText = questions[currentQuestion];
+            const container = document.getElementById("question-container");
+            container.style.opacity = "0";
+            container.style.transform = "translateX(100%)";
+            setTimeout(() => {
+                container.innerText = questions[currentQuestion];
+                container.style.opacity = "1";
+                container.style.transform = "translateX(0)";
+            }, 300);
         }
         
         function answer(choice) {
@@ -101,28 +109,16 @@
             }
         }
         
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                loadQuestion();
-            }
-        }
-        
         function showResult() {
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("result").classList.remove("hidden");
-            const score = answers.filter(a => a === "yes").length * 10;
-            document.getElementById("score").innerText = score;
-            
-            const resultsContainer = document.getElementById("detailed-results");
-            resultsContainer.innerHTML = "";
-            questions.forEach((question, index) => {
-                const answer = answers[index];
-                const correct = answer === "yes";
-                const symbol = correct ? "✅" : "❌";
-                const message = correct ? "😊 Good job!" : `🚨 ${bestPractices[index]}`;
-                resultsContainer.innerHTML += `<div><span class='icon'>${symbol}</span> ${question}<div class='message'>${message}</div></div>`;
-            });
+            const scorePercentage = (answers.filter(a => a === "yes").length / questions.length) * 100;
+            const scoreElement = document.getElementById("score");
+            scoreElement.innerText = scorePercentage.toFixed(0) + "%";
+            scoreElement.className = "score";
+            if (scorePercentage <= 50) scoreElement.classList.add("red");
+            else if (scorePercentage > 50 && scorePercentage <= 80) scoreElement.classList.add("yellow");
+            else scoreElement.classList.add("green");
         }
         
         loadQuestion();
