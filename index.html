@@ -36,7 +36,7 @@
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            text-align: center;
+            text-align: left;
             transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
             opacity: 0;
         }
@@ -55,7 +55,7 @@
         .buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         button {
             padding: 10px 20px;
@@ -68,6 +68,12 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -75,6 +81,7 @@
         <h1>Interaction Metrics True Data Process</h1>
         <form id="quizForm">
             <div class="question-container" id="questionsContainer"></div>
+            <div class="error" id="error">Please select an answer before proceeding.</div>
             <div class="buttons">
                 <button type="button" id="prev" disabled>Previous</button>
                 <button type="button" id="next">Next</button>
@@ -101,6 +108,7 @@
         let currentQuestion = 0;
         let score = 0;
         const container = document.getElementById("questionsContainer");
+        const errorDiv = document.getElementById("error");
         
         function renderQuestions() {
             questions.forEach((question, index) => {
@@ -109,8 +117,8 @@
                 if (index === 0) div.classList.add("active");
                 div.innerHTML = `
                     <p>${index + 1}. ${question}</p>
-                    <label><input type="radio" name="q${index}" value="yes" required> Yes</label>
-                    <label><input type="radio" name="q${index}" value="no" required> No</label>
+                    <label><input type="radio" name="q${index}" value="yes"> Yes</label>
+                    <label><input type="radio" name="q${index}" value="no"> No</label>
                 `;
                 container.appendChild(div);
             });
@@ -125,18 +133,17 @@
         function showQuestion(index) {
             const questions = document.querySelectorAll(".question");
             questions.forEach((q, i) => {
-                q.classList.remove("active", "prev-exit", "next-enter");
-                if (i === index) {
-                    q.classList.add("active");
-                } else if (i < index) {
-                    q.classList.add("prev-exit");
-                } else {
-                    q.classList.add("next-enter");
-                }
+                q.style.display = i === index ? "block" : "none";
             });
         }
 
         document.getElementById("next").addEventListener("click", () => {
+            const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+            if (!selected) {
+                errorDiv.style.display = "block";
+                return;
+            }
+            errorDiv.style.display = "none";
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 showQuestion(currentQuestion);
