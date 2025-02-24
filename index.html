@@ -108,9 +108,6 @@
                 button.classList.add("button");
                 button.innerText = option;
                 button.onclick = () => answer(index);
-                if (answers[currentQuestion] === index) {
-                    button.classList.add("selected");
-                }
                 answerButtons.appendChild(button);
             });
         }
