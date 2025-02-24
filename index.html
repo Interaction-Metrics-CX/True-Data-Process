@@ -6,7 +6,7 @@
     <title>Interaction Metrics True Data Process</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; text-align: left; }
-        .container { max-width: 400px; margin: auto; overflow: hidden; }
+        .container { max-width: 800px; margin: auto; overflow: hidden; }
         h1 { text-align: center; }
         .question-box { 
             padding: 20px; 
@@ -16,10 +16,20 @@
             position: relative; 
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
+            font-size: 20px;
         }
-        .button-container { display: flex; justify-content: space-between; margin-top: 10px; }
+        .button-container { display: flex; flex-direction: column; margin-top: 20px; }
         .button { 
-            flex: 1; padding: 15px; margin: 5px; font-size: 18px; text-align: center; border: none; cursor: pointer; border-radius: 5px; background-color: lightgray; transition: background-color 0.3s;
+            width: 100%;
+            padding: 15px; 
+            margin: 5px 0; 
+            font-size: 18px; 
+            text-align: center; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            background-color: lightgray; 
+            transition: background-color 0.3s;
         }
         .button.selected { background-color: blue; color: white; }
         .button:active { background-color: darkblue; color: white; }
@@ -43,10 +53,7 @@
     <div class="container">
         <div id="quiz">
             <div id="question-container" class="question-box"></div>
-            <div class="button-container">
-                <button id="yes-button" class="button" onclick="answer('yes')">Yes</button>
-                <button id="no-button" class="button" onclick="answer('no')">No</button>
-            </div>
+            <div class="button-container" id="answer-buttons"></div>
             <div class="navigation">
                 <button id="back-button" class="back-button" onclick="prevQuestion()">←</button>
             </div>
@@ -60,43 +67,42 @@
 
     <script>
         const questions = [
-            "Do you prioritize customer feedback in decision-making?",
-            "Does your company analyze data before implementing changes?",
-            "Is customer satisfaction a key metric in your business strategy?",
-            "Do you use structured surveys to gather feedback?",
-            "Are you confident in the accuracy of your collected data?",
-            "Do you regularly iterate processes based on customer insights?",
-            "Have you eliminated bias from your customer surveys?",
-            "Do you validate customer feedback with multiple data sources?",
-            "Are you using science-based methodologies for customer experience?",
-            "Do you believe data-driven decisions lead to better customer engagement?"
+            { q: "To what extent do you remove bias from your surveys?", options: ["We rigorously test and eliminate bias", "We review question wording but don't test for bias", "We design our surveys but haven't evaluated them for bias", "We don't consider bias when designing our surveys"], scores: [10, 7, 3, 0] },
+            { q: "Who removes bias from your surveys?", options: ["Me", "My department", "Another department", "Nobody"], scores: [5, 7, 3, 0] },
+            { q: "Did an external validated party tell you your survey is bias-free?", options: ["Yes", "No"], scores: [10, 0] },
+            { q: "Does your survey allow for anonymity?", options: ["Yes", "No"], scores: [10, 0] },
+            { q: "Are surveys your only customer feedback tool?", options: ["Yes", "No"], scores: [0, 10] },
+            { q: "Do you have methods in place to ensure representative response?", options: ["Yes", "No"], scores: [10, 0] },
+            { q: "On a scale of 1-5, how robust is your analysis?", options: ["1", "2", "3", "4", "5"], scores: [2, 4, 6, 8, 10] },
+            { q: "How often do you update your surveys to remove bias?", options: ["Every time we launch a new survey", "Once per year", "Only when issues are reported", "Never"], scores: [10, 7, 3, 0] },
+            { q: "How do you handle survey responses that indicate unclear or biased questions?", options: ["We conduct follow-up research and refine our surveys accordingly", "We flag potential issues and review them periodically", "We acknowledge issues but don’t formally address them", "We don’t track unclear or biased responses"], scores: [10, 7, 3, 0] },
+            { q: "How do you analyze open-ended feedback from surveys?", options: ["We use AI or text analytics tools to categorize and extract insights", "We manually review and tag responses", "We skim responses for key themes", "We don’t analyze open-ended feedback systematically"], scores: [10, 7, 3, 0] }
         ];
 
-        const bestPractices = [
-            "Customer feedback helps refine products and services.",
-            "Data analysis prevents costly business mistakes.",
-            "Customer satisfaction drives loyalty and revenue.",
-            "Structured surveys provide measurable insights.",
-            "Accurate data leads to better business decisions.",
-            "Iteration improves products based on real feedback.",
-            "Bias skews results, making decisions less effective.",
-            "Multiple data sources provide a full customer view.",
-            "Science-based methods ensure objective measurement.",
-            "Data-driven decisions yield better engagement strategies."
-        ];
-        
         let currentQuestion = 0;
         let answers = Array(questions.length).fill(null);
-        
+
         function loadQuestion() {
             const container = document.getElementById("question-container");
+            const answerButtons = document.getElementById("answer-buttons");
             container.style.opacity = "0";
             setTimeout(() => {
-                container.innerText = questions[currentQuestion];
+                container.innerText = questions[currentQuestion].q;
+                answerButtons.innerHTML = "";
+                questions[currentQuestion].options.forEach((option, index) => {
+                    const button = document.createElement("button");
+                    button.classList.add("button");
+                    button.innerText = option;
+                    button.onclick = () => answer(index);
+                    if (answers[currentQuestion] === index) {
+                        button.classList.add("selected");
+                    }
+                    answerButtons.appendChild(button);
+                });
                 container.style.opacity = "1";
             }, 300);
         }
-        
+
         function answer(choice) {
             answers[currentQuestion] = choice;
             setTimeout(() => {
@@ -108,36 +114,14 @@
                 }
             }, 300);
         }
-        
+
         function prevQuestion() {
             if (currentQuestion > 0) {
                 currentQuestion--;
                 loadQuestion();
             }
         }
-        
-        function showResult() {
-            document.getElementById("quiz").classList.add("hidden");
-            document.getElementById("result").classList.remove("hidden");
-            const scorePercentage = (answers.filter(a => a === "yes").length / questions.length) * 100;
-            const scoreElement = document.getElementById("score");
-            scoreElement.innerText = scorePercentage.toFixed(0) + "%";
-            scoreElement.className = "score";
-            if (scorePercentage <= 50) scoreElement.classList.add("red");
-            else if (scorePercentage > 50 && scorePercentage <= 80) scoreElement.classList.add("yellow");
-            else scoreElement.classList.add("green");
-            
-            const resultsContainer = document.getElementById("detailed-results");
-            resultsContainer.innerHTML = "";
-            questions.forEach((question, index) => {
-                const answer = answers[index];
-                const correct = answer === "yes";
-                const symbol = correct ? "✅" : "❌";
-                const message = correct ? "😊 Good job!" : `🚨 ${bestPractices[index]}`;
-                resultsContainer.innerHTML += `<div class='result-row'><div class='icon-column'>${symbol}</div><div class='text-column'>${question}<div class='message'>${message}</div></div></div>`;
-            });
-        }
-        
+
         loadQuestion();
     </script>
 </body>
