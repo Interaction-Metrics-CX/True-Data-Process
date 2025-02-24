@@ -82,47 +82,24 @@
         let currentQuestion = 0;
         let answers = Array(questions.length).fill(null);
 
-        function loadQuestion() {
-            const container = document.getElementById("question-container");
-            const answerButtons = document.getElementById("answer-buttons");
-            container.style.opacity = "0";
-            setTimeout(() => {
-                container.innerText = questions[currentQuestion].q;
-                answerButtons.innerHTML = "";
-                questions[currentQuestion].options.forEach((option, index) => {
-                    const button = document.createElement("button");
-                    button.classList.add("button");
-                    button.innerText = option;
-                    button.onclick = () => answer(index);
-                    if (answers[currentQuestion] === index) {
-                        button.classList.add("selected");
-                    }
-                    answerButtons.appendChild(button);
-                });
-                container.style.opacity = "1";
-            }, 300);
+        function showResult() {
+            document.getElementById("quiz").classList.add("hidden");
+            document.getElementById("result").classList.remove("hidden");
+            const score = answers.reduce((total, answer, index) => total + (questions[index].scores[answer] || 0), 0);
+            const scoreElement = document.getElementById("score");
+            scoreElement.innerText = `${score}%`;
+            if (score <= 50) scoreElement.classList.add("red");
+            else if (score > 50 && score <= 80) scoreElement.classList.add("yellow");
+            else scoreElement.classList.add("green");
+            const resultsContainer = document.getElementById("detailed-results");
+            resultsContainer.innerHTML = "";
+            questions.forEach((question, index) => {
+                const selected = answers[index];
+                const symbol = selected === null ? "❔" : (questions[index].scores[selected] === 10 ? "✅" : "❌");
+                const message = questions[index].scores[selected] === 10 ? "😊 Good job!" : `🚨 Consider: ${question.options[selected]}`;
+                resultsContainer.innerHTML += `<div class='result-row'><div class='icon-column'>${symbol}</div><div class='text-column'>${question.q}<div class='message'>${message}</div></div></div>`;
+            });
         }
-
-        function answer(choice) {
-            answers[currentQuestion] = choice;
-            setTimeout(() => {
-                if (currentQuestion < questions.length - 1) {
-                    currentQuestion++;
-                    loadQuestion();
-                } else {
-                    showResult();
-                }
-            }, 300);
-        }
-
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                loadQuestion();
-            }
-        }
-
-        loadQuestion();
     </script>
 </body>
 </html>
