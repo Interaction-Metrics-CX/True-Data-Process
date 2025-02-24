@@ -92,8 +92,8 @@
             resultsContainer.innerHTML = "";
             questions.forEach((question, index) => {
                 const selected = answers[index];
-                const symbol = selected === null ? "❔" : (questions[index].scores[selected] === 10 ? "✅" : "❌");
-                const message = questions[index].scores[selected] === 10 ? "😊 Good job!" : `🚨 Best practice: ${question.options[selected]}`;
+                const symbol = selected !== null && questions[index].scores[selected] === 10 ? "✅" : "❌";
+                const message = selected !== null && questions[index].scores[selected] === 10 ? "😊 Good job!" : `🚨 Best practice: ${question.options[selected] || "No answer selected"}`;
                 resultsContainer.innerHTML += `<div class='result-row'><div class='icon-column'>${symbol}</div><div class='text-column'>${question.q}<div class='message'>${message}</div></div></div>`;
             });
         }
