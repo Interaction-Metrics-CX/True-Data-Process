@@ -72,7 +72,9 @@
             { q: "Did an external validated party tell you your survey is bias-free?", options: ["Yes", "No"], scores: [10, 0] },
             { q: "Does your survey allow for anonymity?", options: ["Yes", "No"], scores: [10, 0] },
             { q: "Are surveys your only customer feedback tool?", options: ["Yes", "No"], scores: [0, 10] },
-            { q: "Do you have methods in place to ensure representative response?", options: ["Yes", "No"], scores: [10, 0] }
+            { q: "Do you have methods in place to ensure representative response?", options: ["Yes", "No"], scores: [10, 0] },
+            { q: "How do you handle survey responses that indicate unclear or biased questions?", options: ["We conduct follow-up research and refine our surveys accordingly", "We flag potential issues and review them periodically", "We acknowledge issues but don’t formally address them", "We don’t track unclear or biased responses"], scores: [10, 7, 3, 0] },
+            { q: "How do you analyze open-ended feedback from surveys?", options: ["We use AI or text analytics tools to categorize and extract insights", "We manually review and tag responses", "We skim responses for key themes", "We don’t analyze open-ended feedback systematically"], scores: [10, 7, 3, 0] }
         ];
 
         let currentQuestion = 0;
