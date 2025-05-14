@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Bias Assessment</title>
+    <title>TrueData™ Model Survey Assessment</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; text-align: left; }
         .container { max-width: 800px; margin: auto; overflow: hidden; }
@@ -46,7 +46,7 @@
     </style>
 </head>
 <body>
-    <h1>Survey Bias Assessment</h1>
+    <h1>TrueData™ Model Survey Assessment</h1>
     <div class="container">
         <div id="quiz">
             <div id="question-container" class="question-box"></div>
@@ -58,22 +58,84 @@
         <div id="result" class="hidden score-container">
             <h2>Your Score:</h2>
             <p id="score" class="score"></p>
+            <button onclick="startOver()" class="button">Start Over</button>
+            <h3>Review of Your Answers:</h3>
             <div id="detailed-results" class="results-list"></div>
         </div>
     </div>
 
     <script>
         const questions = [
-            { q: "To what extent do you remove bias from your surveys?", options: ["We rigorously test and eliminate bias", "We review question wording but don't test for bias", "We design our surveys but haven't evaluated them for bias", "We don't consider bias when designing our surveys"], scores: [10, 7, 3, 0] },
-            { q: "Who removes bias from your surveys?", options: ["Me", "My department", "Another department", "Nobody"], scores: [5, 7, 3, 0] },
-            { q: "Did an external validated party tell you your survey is bias-free?", options: ["Yes", "No"], scores: [10, 0] },
-            { q: "Does your survey allow for anonymity?", options: ["Yes", "No"], scores: [10, 0] },
-            { q: "Are surveys your only customer feedback tool?", options: ["Yes", "No"], scores: [0, 10] },
-            { q: "Do you have methods in place to ensure representative response?", options: ["Yes", "No"], scores: [10, 0] },
-            { q: "On a scale of 1-5, how robust is your analysis?", options: ["1", "2", "3", "4", "5"], scores: [2, 4, 6, 8, 10] },
-            { q: "How often do you update your surveys to remove bias?", options: ["Every time we launch a new survey", "Once per year", "Only when issues are reported", "Never"], scores: [10, 7, 3, 0] },
-            { q: "How do you handle survey responses that indicate unclear or biased questions?", options: ["We conduct follow-up research and refine our surveys accordingly", "We flag potential issues and review them periodically", "We acknowledge issues but don’t formally address them", "We don’t track unclear or biased responses"], scores: [10, 7, 3, 0] },
-            { q: "How do you analyze open-ended feedback from surveys?", options: ["We use AI or text analytics tools to categorize and extract insights", "We manually review and tag responses", "We skim responses for key themes", "We don’t analyze open-ended feedback systematically"], scores: [10, 7, 3, 0] }
+            { 
+                q: "To what extent do you remove bias from your surveys?", 
+                options: ["We rigorously test and eliminate bias", "We review question wording but don't test for bias", "We design our surveys but haven't evaluated them for bias", "We don't consider bias when designing our surveys"], 
+                scores: [10, 7, 3, 0],
+                correctAnswerIndex: 0,
+                explanation: "Removing bias is crucial for accurate data collection. Rigorous testing ensures that your surveys are truly unbiased."
+            },
+            { 
+                q: "Who removes bias from your surveys?", 
+                options: ["Me", "My department", "Another department", "Nobody"], 
+                scores: [5, 7, 3, 0],
+                correctAnswerIndex: 1,
+                explanation: "It's important for a dedicated department to handle bias removal to ensure consistency and expertise."
+            },
+            { 
+                q: "Did an external validated party tell you your survey is bias-free?", 
+                options: ["Yes", "No"], 
+                scores: [10, 0],
+                correctAnswerIndex: 0,
+                explanation: "External validation ensures objectivity and confirms that your survey design is unbiased."
+            },
+            { 
+                q: "Does your survey allow for anonymity?", 
+                options: ["Yes", "No"], 
+                scores: [10, 0],
+                correctAnswerIndex: 0,
+                explanation: "Anonymity encourages honest responses, making survey results more reliable."
+            },
+            { 
+                q: "Are surveys your only customer feedback tool?", 
+                options: ["Yes", "No"], 
+                scores: [0, 10],
+                correctAnswerIndex: 1,
+                explanation: "Using multiple feedback tools ensures comprehensive insights, rather than relying solely on surveys."
+            },
+            { 
+                q: "Do you have methods in place to ensure representative response?", 
+                options: ["Yes", "No"], 
+                scores: [10, 0],
+                correctAnswerIndex: 0,
+                explanation: "A representative sample is vital for making sure the survey results reflect the entire customer base."
+            },
+            { 
+                q: "On a scale of 1-5, how robust is your analysis?", 
+                options: ["1", "2", "3", "4", "5"], 
+                scores: [2, 4, 6, 8, 10],
+                correctAnswerIndex: 4,
+                explanation: "A robust analysis (5) shows you are using advanced techniques to interpret survey data effectively."
+            },
+            { 
+                q: "How often do you update your surveys to remove bias?", 
+                options: ["Every time we launch a new survey", "Once per year", "Only when issues are reported", "Never"], 
+                scores: [10, 7, 3, 0],
+                correctAnswerIndex: 0,
+                explanation: "Regular updates ensure that surveys stay aligned with current best practices in bias-free data collection."
+            },
+            { 
+                q: "How do you handle survey responses that indicate unclear or biased questions?", 
+                options: ["We conduct follow-up research and refine our surveys accordingly", "We flag potential issues and review them periodically", "We acknowledge issues but don’t formally address them", "We don’t track unclear or biased responses"], 
+                scores: [10, 7, 3, 0],
+                correctAnswerIndex: 0,
+                explanation: "Follow-up research helps improve surveys by addressing potential bias and unclear questions."
+            },
+            { 
+                q: "How do you analyze open-ended feedback from surveys?", 
+                options: ["We use AI or text analytics tools to categorize and extract insights", "We manually review and tag responses", "We skim responses for key themes", "We don’t analyze open-ended feedback systematically"], 
+                scores: [10, 7, 3, 0],
+                correctAnswerIndex: 0,
+                explanation: "AI tools help efficiently categorize and analyze open-ended feedback, revealing deeper insights."
+            }
         ];
         
         let currentQuestion = 0;
@@ -93,7 +155,11 @@
         }
         
         function answer(choice) {
-            answers[currentQuestion] = questions[currentQuestion].scores[choice];
+            answers[currentQuestion] = {
+                score: questions[currentQuestion].scores[choice],
+                selectedOption: choice,
+                correctAnswerIndex: questions[currentQuestion].correctAnswerIndex
+            };
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 loadQuestion();
@@ -109,11 +175,40 @@
             }
         }
         
+        function startOver() {
+            currentQuestion = 0;
+            answers = [];
+            document.getElementById("quiz").classList.remove("hidden");
+            document.getElementById("result").classList.add("hidden");
+            loadQuestion();
+        }
+        
         function showResult() {
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("result").classList.remove("hidden");
-            const score = answers.reduce((a, b) => a + b, 0);
+            const score = answers.reduce((a, b) => a + b.score, 0);
             document.getElementById("score").innerText = `${score}%`;
+
+            const resultsList = document.getElementById("detailed-results");
+            resultsList.innerHTML = "";
+            answers.forEach((answer, index) => {
+                const resultRow = document.createElement("div");
+                resultRow.classList.add("result-row");
+
+                const iconColumn = document.createElement("div");
+                iconColumn.classList.add("icon-column");
+                const icon = document.createElement("span");
+                icon.innerText = answer.selectedOption === answer.correctAnswerIndex ? "✔️" : "❌";
+                iconColumn.appendChild(icon);
+                
+                const textColumn = document.createElement("div");
+                textColumn.classList.add("text-column");
+                textColumn.innerHTML = `<b>Q${index + 1}:</b> ${questions[index].q} <br><i>Selected:</i> ${questions[index].options[answer.selectedOption]} <br><i>Explanation:</i> ${questions[index].explanation}`;
+
+                resultRow.appendChild(iconColumn);
+                resultRow.appendChild(textColumn);
+                resultsList.appendChild(resultRow);
+            });
         }
         
         loadQuestion();
